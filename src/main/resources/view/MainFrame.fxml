@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="username" prefHeight="898.0" prefWidth="1259.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wyz.socketchat.controller.MainFrameController">
+   <children>
+      <Button fx:id="connectBtn" layoutX="776.0" layoutY="26.0" mnemonicParsing="false" onAction="#connect" prefHeight="53.0" prefWidth="104.0" text="连接">
+         <font>
+            <Font size="18.0" />
+         </font></Button>
+      <TextField fx:id="ipField" layoutX="148.0" layoutY="33.0" prefHeight="39.0" prefWidth="286.0" promptText="输入服务器连接地址" />
+      <TextArea fx:id="mainWindow" layoutX="148.0" layoutY="127.0" prefHeight="470.0" prefWidth="861.0" />
+      <TextArea fx:id="typeArea" layoutX="148.0" layoutY="597.0" prefHeight="169.0" prefWidth="861.0" />
+      <Button fx:id="sendMessageBtn" layoutX="881.0" layoutY="693.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="53.0" prefWidth="112.0" text="发送">
+         <font>
+            <Font size="18.0" />
+         </font></Button>
+      <TextField fx:id="portField" layoutX="443.0" layoutY="33.0" prefHeight="39.0" prefWidth="139.0" promptText="输入端口号" />
+      <Button fx:id="quitBtn" layoutX="905.0" layoutY="26.0" mnemonicParsing="false" onAction="#quitConnect" prefHeight="53.0" prefWidth="104.0" text="断开连接" textFill="#e13636">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Button>
+      <TextField fx:id="nameField" layoutX="590.0" layoutY="33.0" prefHeight="39.0" prefWidth="161.0" promptText="输入用户名" />
+   </children>
+</AnchorPane>
