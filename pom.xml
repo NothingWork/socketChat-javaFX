@@ -40,6 +40,47 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>io.github.fvarrui</groupId>
+                <artifactId>javapackager</artifactId>
+                <version>1.6.6</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 启动类 -->
+                            <mainClass>com.wyz.socketchat.MainApp</mainClass>
+                            <!-- 绑定自定义JRE路径-->
+                            <bundleJre>true</bundleJre>
+                            <jrePath>C:\Program Files\Java\jdk-1.8\jre</jrePath>
+                            <generateInstaller>true</generateInstaller>
+                            <administratorRequired>false</administratorRequired>
+                            <!-- 操作系统-->
+                            <platform>windows</platform>
+                            <copyDependencies>true</copyDependencies>
+                            <!-- 名称与版本-->
+                            <displayName>socketChat</displayName>
+                            <name>socketChat</name>
+                            <version>1.0</version>
+                            <!-- 手动引入额外资源-->
+                            <additionalResources>
+                                <additionalResource>D:\PCweb\code\socketChat\src\main\resources\images\socketChat.png</additionalResource>
+                            </additionalResources>
+                            <!--详细参数配置-->
+                            <winConfig>
+                                <icoFile>D:\PCweb\code\socketChat\src\main\resources\images\favicon.ico</icoFile>
+                                <generateSetup>false</generateSetup>
+                                <generateMsi>false</generateMsi>
+                                <generateMsm>false</generateMsm>
+                            </winConfig>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

@@ -1,19 +1,17 @@
 package com.wyz.socketchat.controller;
 
+import com.wyz.socketchat.bean.Message;
+import com.wyz.socketchat.util.JavaFXUtil;
 import com.wyz.socketchat.util.ListenThread;
 import com.wyz.socketchat.util.MessageUtil;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author Yun
@@ -22,7 +20,9 @@ import java.util.List;
 public class MainFrameController {
     private Socket client;//连接的socket
     ListenThread listenThread;//监听消息的进程
-    MessageUtil messageUtil = new MessageUtil();
+    MessageUtil messageUtil = new MessageUtil();//发送消息工具类
+    Message message = new Message();//消息类包装
+    JavaFXUtil javaFXUtil = new JavaFXUtil();
     @FXML
     private TextField ipField;//填写聊天服务器的ip
     @FXML
@@ -36,10 +36,11 @@ public class MainFrameController {
     @FXML
     private TextArea typeArea;//打字区域
     @FXML
-    private TextArea mainWindow;//主窗口
+    public ScrollPane chatArea;//聊天信息区域
     @FXML
     private Button sendMessageBtn;//发送消息按钮
-
+    @FXML
+    public VBox textBox;//包裹消息的内容器
 
 
     /**
@@ -49,34 +50,38 @@ public class MainFrameController {
      */
     @FXML
     void connect() {
+
         if (ipField.getText().trim().equals("") || portField.getText().trim().equals("")
                 || nameField.getText().trim().equals("")) {
-            mainWindow.appendText("请检查必要信息的填写!\n");
+            javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"请填写必要内容"));
         } else {
             try {
                 //检查端口合法性
                 int port = Integer.parseInt(portField.getText());
-                if(port<1||port>65535){
-                    mainWindow.appendText("端口非法!");
+                if (port < 1 || port > 65535) {
+                    ((VBox) chatArea.getContent()).getChildren().add(javaFXUtil.getText(0, "端口非法"));
                     portField.clear();
                 }
-                //发送服务器连接消息
+                //进行登录，判断结果
                 client = new Socket(ipField.getText(), Integer.parseInt(portField.getText()));
-                messageUtil.sendMessage(client,0,nameField.getText());
-
-                //部分组件状态改变
-                ipField.disableProperty().set(true);
-                portField.disableProperty().set(true);
-                nameField.disableProperty().set(true);
-                connectBtn.disableProperty().set(true);
-                quitBtn.disableProperty().set(false);
-                sendMessageBtn.disableProperty().set(false);
-
-                //开启监听线程
-                listenThread = new ListenThread(client,mainWindow);
-                listenThread.start();
+                boolean bool = javaFXUtil.login(client, nameField.getText());
+                //登录成功
+                if (bool) {
+                    //组件状态改变
+                    setDisable(true);
+                    //开启监听线程
+                    listenThread = new ListenThread(client, chatArea, textBox,nameField.getText());
+                    listenThread.start();
+                    //消息类封装
+                    message.setFromLen(nameField.getText().length());
+                    message.setFromName(nameField.getText());
+                }
+                //登录失败
+                else {
+                    javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"该用户名已被占用"));
+                }
             } catch (IOException e) {
-                mainWindow.appendText("服务器连接失败!\n");
+                javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"服务器连接失败"));
             }
         }
     }
@@ -93,44 +98,52 @@ public class MainFrameController {
         } else {
             //文本框消息
             String str = typeArea.getText();
+            //消息类封装
+            message.setCode('1');
+            message.setToLen(0);
+            message.setToName("");
+            message.setData(str);
             //发送出去消息
-            messageUtil.sendMessage(client,1,nameField.getText()+": "+str);
+            messageUtil.sendMessage(client,message);
+            //messageUtil.sendMessage(client, 1, nameField.getText() + "说：" + str);
             //清空发送区域
             typeArea.setText("");
         }
     }
+
     /**
      * @description: 断开与服务器的连接
      * @param:
      * @return: void
      */
     @FXML
-    public void quitConnect() {
+    void quitConnect() {
         try {
             //关闭监听线程
             listenThread.flag = false;
             //发送断连消息
-            messageUtil.sendMessage(client,2,nameField.getText());
+            message.setCode('2');
+            message.setToLen(0);
+            message.setToName("");
+            message.setData("");
+            messageUtil.sendMessage(client,message);
+            //messageUtil.sendMessage(client, 2, nameField.getText());
             //释放资源与组件状态调整
             client.close();
-            ipField.disableProperty().set(false);
-            portField.disableProperty().set(false);
-            nameField.disableProperty().set(false);
-            quitBtn.disableProperty().set(true);
-            sendMessageBtn.disableProperty().set(true);
-            connectBtn.disableProperty().set(false);
-            mainWindow.appendText("已断开与服务器的连接!\n");
+            setDisable(false);
+            javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"已断开与服务器的连接"));
         } catch (IOException e) {
             System.out.println("断开连接失败");
         }
     }
+
     /**
      * @description: 初始化加载，程序默认调用
      * @param:
      * @return: void
      */
     @FXML
-     void initialize() {
+    void initialize() {
         portCheck();//启用端口号文本框输入检查
         //禁用断开部分组件
         quitBtn.disableProperty().set(true);
@@ -152,4 +165,22 @@ public class MainFrameController {
         }));
     }
 
+    public void setDisable(Boolean bool) {
+        //连接状态bool为false，未连接为true
+        ipField.setDisable(bool);
+        portField.setDisable(bool);
+        nameField.setDisable(bool);
+
+        quitBtn.setDisable(!bool);
+        sendMessageBtn.setDisable(!bool);
+        connectBtn.setDisable(bool);
+
+    }
+
+    public void sendByKeyboard(KeyEvent event) {
+        if (event.getCode() == KeyCode.getKeyCode("Enter")) {
+            event.consume();
+            sendMessageBtn.fire();
+        }
+    }
 }
