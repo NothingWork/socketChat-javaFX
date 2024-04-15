@@ -1,6 +1,8 @@
 package com.wyz.socketchat.util;
 
 import com.wyz.socketchat.bean.Message;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
@@ -11,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * @author Yun
@@ -37,7 +40,6 @@ public class JavaFXUtil {
                 String str = br.readLine();
                 if(str!=null){
                     Message logMsg = new Message().stringToMessage(str);
-                    if(logMsg.getToName().equals(name)){
                         if(logMsg.getCode() == '4'){
                             //成功消息，服务端查验用户名成功，发送成功确认消息
                             message.setCode('7');
@@ -51,7 +53,6 @@ public class JavaFXUtil {
                             messageUtil.sendMessage(socket, message);
                             break;
                         }
-                    }
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -63,10 +64,10 @@ public class JavaFXUtil {
 
     /**
      * @description: 生成用于在聊天区域展示的文本
-     * @param: 消息的类型代码,消息内容
+     * @param: 消息的类型代码,消息内容,是否为私聊消息
      * @return: javafx.scene.text.Text
      */
-    public TextFlow getText(int type, String message){
+    public TextFlow getText(int type, String message, boolean isSolo){
         Text text = new Text(message+"\n");
         TextFlow textFlow =new TextFlow();
         switch (type){
@@ -87,6 +88,8 @@ public class JavaFXUtil {
                 text.setFont(new Font(20));
                 break;
         }
+        //私聊消息再染绿色
+        if(isSolo) text.setFill(Paint.valueOf("#05ad1f"));
         textFlow.getChildren().add(text);
         return textFlow;
     }
@@ -99,6 +102,8 @@ public class JavaFXUtil {
     public void addMessage(VBox textBox,ScrollPane chatArea,TextFlow tf){
         textBox.getChildren().add(tf);
         chatArea.setContent(textBox);
-        chatArea.setVvalue(1.0);
+        chatArea.vvalueProperty().bind(textBox.heightProperty());//自动滚动
     }
+
+
 }

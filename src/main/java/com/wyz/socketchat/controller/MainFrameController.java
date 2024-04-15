@@ -41,6 +41,8 @@ public class MainFrameController {
     private Button sendMessageBtn;//发送消息按钮
     @FXML
     public VBox textBox;//包裹消息的内容器
+    @FXML
+    public ListView<String> userList;//包含在线用户的列表
 
 
     /**
@@ -53,13 +55,13 @@ public class MainFrameController {
 
         if (ipField.getText().trim().equals("") || portField.getText().trim().equals("")
                 || nameField.getText().trim().equals("")) {
-            javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"请填写必要内容"));
+            javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"请填写必要内容",false));
         } else {
             try {
                 //检查端口合法性
                 int port = Integer.parseInt(portField.getText());
                 if (port < 1 || port > 65535) {
-                    ((VBox) chatArea.getContent()).getChildren().add(javaFXUtil.getText(0, "端口非法"));
+                    ((VBox) chatArea.getContent()).getChildren().add(javaFXUtil.getText(0, "端口非法",false));
                     portField.clear();
                 }
                 //进行登录，判断结果
@@ -70,18 +72,18 @@ public class MainFrameController {
                     //组件状态改变
                     setDisable(true);
                     //开启监听线程
-                    listenThread = new ListenThread(client, chatArea, textBox,nameField.getText());
+                    listenThread = new ListenThread(client, chatArea, textBox,userList,nameField.getText());
                     listenThread.start();
-                    //消息类封装
+                    //消息类封装（用于统一的消息发送）
                     message.setFromLen(nameField.getText().length());
                     message.setFromName(nameField.getText());
                 }
                 //登录失败
                 else {
-                    javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"该用户名已被占用"));
+                    javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"该用户名已被占用",false));
                 }
             } catch (IOException e) {
-                javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"服务器连接失败"));
+                javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"服务器连接失败",false));
             }
         }
     }
@@ -105,7 +107,6 @@ public class MainFrameController {
             message.setData(str);
             //发送出去消息
             messageUtil.sendMessage(client,message);
-            //messageUtil.sendMessage(client, 1, nameField.getText() + "说：" + str);
             //清空发送区域
             typeArea.setText("");
         }
@@ -131,7 +132,7 @@ public class MainFrameController {
             //释放资源与组件状态调整
             client.close();
             setDisable(false);
-            javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"已断开与服务器的连接"));
+            javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"已断开与服务器的连接",false));
         } catch (IOException e) {
             System.out.println("断开连接失败");
         }

@@ -92,15 +92,15 @@ public class Message {
      * @return: bean.Message
      */
     public Message reverse(Message message){
-        int fromLen = message.getFromLen();
-        String fromName = message.getFromName();
+        int fromLen = this.fromLen;
+        String fromName = this.fromName;
 
-        message.setFromLen(message.getToLen());
-        message.setFromName(message.getToName());
+        this.fromLen = this.toLen;
+        this.fromName = this.toName;
 
-        message.setToLen(fromLen);
-        message.setToName(fromName);
+        this.toLen = fromLen;
+        this.toName = fromName;
 
-        return message;
+        return this;
     }
 }
