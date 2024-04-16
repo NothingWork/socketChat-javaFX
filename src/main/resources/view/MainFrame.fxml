@@ -30,13 +30,23 @@
             <VBox fx:id="textBox" alignment="CENTER" prefHeight="37.0" prefWidth="831.0" />
          </content>
       </ScrollPane>
-      <ListView fx:id="userList" layoutX="1009.0" layoutY="94.0" prefHeight="672.0" prefWidth="161.0" />
+      <ListView fx:id="userList" layoutX="1009.0" layoutY="94.0" onMouseClicked="#listClick" prefHeight="672.0" prefWidth="161.0" />
       <Text layoutX="1023.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="当前在线：" wrappingWidth="152.30029296875">
          <font>
             <Font size="21.0" />
          </font>
       </Text>
       <Text layoutX="1023.0" layoutY="85.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(选中以私聊)">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="490.0" layoutY="784.0" strokeType="OUTSIDE" strokeWidth="0.0" text="发送至：">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Text fx:id="receiver" fill="#000000de" layoutX="559.0" layoutY="783.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="38.30029296875">
          <font>
             <Font size="18.0" />
          </font>

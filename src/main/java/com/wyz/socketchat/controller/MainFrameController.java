@@ -8,7 +8,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -43,6 +46,8 @@ public class MainFrameController {
     public VBox textBox;//包裹消息的内容器
     @FXML
     public ListView<String> userList;//包含在线用户的列表
+    @FXML
+    private Text receiver;//消息接收者
 
 
     /**
@@ -77,6 +82,10 @@ public class MainFrameController {
                     //消息类封装（用于统一的消息发送）
                     message.setFromLen(nameField.getText().length());
                     message.setFromName(nameField.getText());
+                    //填充在线列表,默认选中群发
+                    userList.getItems().add("（选中以群发）");
+                    userList.getSelectionModel().select(0);
+                    receiver.setText("群发");
                 }
                 //登录失败
                 else {
@@ -101,10 +110,13 @@ public class MainFrameController {
             //文本框消息
             String str = typeArea.getText();
             //消息类封装
-            message.setCode('1');
-            message.setToLen(0);
-            message.setToName("");
+            String toName = userList.getSelectionModel().getSelectedItem();//选中的发送人
+            message.setToLen(toName.length());
+            message.setToName(toName);
             message.setData(str);
+            //判断是否为私发
+            if(userList.getSelectionModel().getSelectedIndex() == 0) message.setCode('1');
+            else message.setCode('8');
             //发送出去消息
             messageUtil.sendMessage(client,message);
             //清空发送区域
@@ -128,11 +140,12 @@ public class MainFrameController {
             message.setToName("");
             message.setData("");
             messageUtil.sendMessage(client,message);
-            //messageUtil.sendMessage(client, 2, nameField.getText());
             //释放资源与组件状态调整
             client.close();
             setDisable(false);
             javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"已断开与服务器的连接",false));
+            userList.getItems().clear();
+            receiver.setText("");
         } catch (IOException e) {
             System.out.println("断开连接失败");
         }
@@ -146,7 +159,7 @@ public class MainFrameController {
     @FXML
     void initialize() {
         portCheck();//启用端口号文本框输入检查
-        //禁用断开部分组件
+        //禁用部分组件
         quitBtn.disableProperty().set(true);
         sendMessageBtn.disableProperty().set(true);
     }
@@ -166,6 +179,12 @@ public class MainFrameController {
         }));
     }
 
+    /**
+     * @description: 改变组件是否被禁用的状态
+     * @param: 要改变的状态
+     * @return: void
+     */
+
     public void setDisable(Boolean bool) {
         //连接状态bool为false，未连接为true
         ipField.setDisable(bool);
@@ -178,10 +197,33 @@ public class MainFrameController {
 
     }
 
+    /**
+     * @description: 在文本输入区域禁用回车键
+     * @param: event
+     * @return: void
+     */
     public void sendByKeyboard(KeyEvent event) {
         if (event.getCode() == KeyCode.getKeyCode("Enter")) {
             event.consume();
             sendMessageBtn.fire();
+        }
+    }
+
+    /**
+     * @description: 监听列表点击事件。将当前选中的接收者渲染到提示区域
+     * @param: event
+     * @return: void
+     */
+    public void listClick(MouseEvent mouseEvent) {
+        //1.新选中群发
+        if(userList.getSelectionModel().getSelectedIndex()==0){
+            receiver.setFill(Paint.valueOf("#000000"));
+            receiver.setText("群发");
+        }
+        //2.选中私聊
+        else{
+            receiver.setFill(Paint.valueOf("#05ad1f"));
+            receiver.setText(userList.getSelectionModel().getSelectedItem());
         }
     }
 }

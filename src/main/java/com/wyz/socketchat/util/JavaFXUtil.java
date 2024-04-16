@@ -47,7 +47,7 @@ public class JavaFXUtil {
                             flag = true;
                             break;
                         }
-                        else if(message.getCode() == '3'){
+                        else if(logMsg.getCode() == '3'){
                             //失败消息，服务端查验用户名失败，发送失败确认消息，客户端被迫断连
                             message.setCode('6');
                             messageUtil.sendMessage(socket, message);

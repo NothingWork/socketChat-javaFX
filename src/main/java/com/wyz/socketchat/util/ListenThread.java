@@ -48,7 +48,6 @@ public class ListenThread extends Thread {
                 if (str != null) {
 
                     Message message = new Message().stringToMessage(str);
-                    System.out.println(message.getCode());
                     int type = 0;//消息类型，默认为系统广播消息
                     boolean isSolo = false;//是否为私聊消息，默认为非私聊
                     switch (message.getCode()) {
@@ -67,7 +66,7 @@ public class ListenThread extends Thread {
                             }
                             break;
                         case '8':
-                            //群发消息，
+                            //私聊消息，
                             isSolo = true;
                             if (message.getFromName().equals(name)) {
                                 //是自己发出的消息
@@ -84,7 +83,7 @@ public class ListenThread extends Thread {
                             Platform.runLater(() -> updateList(listView,message.getData()));
                             break;
                     }
-                    //消息代码为 '9' 不用渲染
+                    //消息代码为 '9' 不用在聊天区域渲染消息
                     if(message.getCode()!='9'){
                         int finalType = type;
                         boolean finalIsSolo = isSolo;
@@ -106,8 +105,29 @@ public class ListenThread extends Thread {
      */
     public void updateList(ListView<String> listView, String str){
         //从字符串中分割list
-        ObservableList<String> list = messageUtil.getListByStr(str);
+        ObservableList<String> list = messageUtil.getListByStr(str); //新的在线列表
         list.remove(name);//去除自己
+        list.add(0,"（选中以群发）");//添加群发选项
+
+        //为了不影响用户原有的操作，对列表进行逐步更新而不是整个list直接替换
+        //删除离线的
+        for (String name:listView.getItems()
+             ) {
+            if(!list.contains(name)){
+                //如果移除的是当前选中的，则改选中为0
+                if(name.equals(listView.getSelectionModel().getSelectedItem())){
+                    listView.getSelectionModel().select(0);
+                }
+                listView.getItems().remove(name);
+            }
+        }
+        //添加上线的
+        for (String name:list
+             ) {
+            if(!listView.getItems().contains(name)){
+                listView.getItems().add(name);
+            }
+        }
         listView.setItems(list);
     }
 
