@@ -1,0 +1,86 @@
+/*滚动条样式设置*/
+.scroll-bar:vertical .track{
+    -fx-background-color:transparent;
+    -fx-border-color:transparent;
+    -fx-background-radius: 0em;
+    -fx-border-radius:2em;
+}
+
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button{
+    -fx-background-radius: 0em;
+    -fx-padding:0 0 10 0;
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow{
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+
+.scroll-bar:vertical .thumb{
+    -fx-background-color:derive(black,90%);
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+}
+
+.scroll-bar:vertical:hover .track,
+.scroll-bar:vertical:pressed .track{
+    -fx-background-color: rgba(204, 204, 204, 0.55);
+    -fx-opacity: 0.2;
+    -fx-background-radius: 0em;
+}
+
+.scroll-bar:vertical .thumb:hover,
+.scroll-bar:vertical .thumb:pressed{
+    -fx-background-color: derive(black,50%);
+}
+
+.scroll-bar:vertical .increment-button:hover ,
+.scroll-bar:vertical .decrement-button:hover{
+    -fx-background-color:derive(gray,100%);
+    -fx-border-color:derive(gray,80%);
+}
+.scroll-pane{
+    -fx-hbar-policy: never;
+
+}
+.scroll-pane > .viewport{
+-fx-background-image:url('/images/chatbg.jpg');
+    -fx-border-radius: 5px;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+}
+/*发送按钮*/
+#sendMessageBtn{
+    -fx-background-color: transparent;
+    -fx-background-image: url('/images/bg.jpg');
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 180,180;
+    -fx-border-width: 1px;
+    -fx-border-color: black;
+}
+#sendMessageBtn:hover{
+    -fx-cursor: hand;
+}
+
+
+/*聊天气泡*/
+/*系统消息*/
+/*padding 上右下左*/
+.text-flow1{
+    -fx-min-height: 30;
+    -fx-background-color: rgba(224, 149, 209, 0.5);
+    -fx-background-radius: 10;
+    -fx-padding: 5 0 0 0;
+    -fx-text-alignment: center;
+}
+
+/*聊天消息*/
+.text-flow3{
+    -fx-padding: 5 10 5 10;
+    -fx-background-color: rgba(121,112,112,0.3);
+    -fx-background-radius: 10;
+    -fx-text-alignment: left;
+}

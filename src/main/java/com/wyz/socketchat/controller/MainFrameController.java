@@ -1,5 +1,6 @@
 package com.wyz.socketchat.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wyz.socketchat.bean.Message;
 import com.wyz.socketchat.util.JavaFXUtil;
 import com.wyz.socketchat.util.ListenThread;
@@ -60,13 +61,13 @@ public class MainFrameController {
 
         if (ipField.getText().trim().equals("") || portField.getText().trim().equals("")
                 || nameField.getText().trim().equals("")) {
-            javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"请填写必要内容",false));
+            javaFXUtil.drawMessage(textBox, chatArea,0,"请填写必要内容","",false);
         } else {
             try {
                 //检查端口合法性
                 int port = Integer.parseInt(portField.getText());
                 if (port < 1 || port > 65535) {
-                    ((VBox) chatArea.getContent()).getChildren().add(javaFXUtil.getText(0, "端口非法",false));
+                    javaFXUtil.drawMessage(textBox, chatArea,0,"端口非法","",false);
                     portField.clear();
                 }
                 //进行登录，判断结果
@@ -77,7 +78,7 @@ public class MainFrameController {
                     //组件状态改变
                     setDisable(true);
                     //开启监听线程
-                    listenThread = new ListenThread(client, chatArea, textBox,userList,nameField.getText());
+                    listenThread = new ListenThread(client, chatArea, textBox,userList,receiver,nameField.getText());
                     listenThread.start();
                     //消息类封装（用于统一的消息发送）
                     message.setFromLen(nameField.getText().length());
@@ -89,10 +90,10 @@ public class MainFrameController {
                 }
                 //登录失败
                 else {
-                    javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"该用户名已被占用",false));
+                    javaFXUtil.drawMessage(textBox, chatArea,0,"该用户名已被占用","",false);
                 }
             } catch (IOException e) {
-                javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"服务器连接失败",false));
+                javaFXUtil.drawMessage(textBox, chatArea,0,"服务器连接失败","",false);
             }
         }
     }
@@ -104,9 +105,7 @@ public class MainFrameController {
      */
     @FXML
     void sendMessage() {
-        if (typeArea.getText().equals("")) {
-            System.out.println("没打字，处理一下");
-        } else {
+        if (!typeArea.getText().equals("")) {
             //文本框消息
             String str = typeArea.getText();
             //消息类封装
@@ -115,10 +114,10 @@ public class MainFrameController {
             message.setToName(toName);
             message.setData(str);
             //判断是否为私发
-            if(userList.getSelectionModel().getSelectedIndex() == 0) message.setCode('1');
+            if (userList.getSelectionModel().getSelectedIndex() == 0) message.setCode('1');
             else message.setCode('8');
             //发送出去消息
-            messageUtil.sendMessage(client,message);
+            messageUtil.sendMessage(client, message);
             //清空发送区域
             typeArea.setText("");
         }
@@ -143,7 +142,7 @@ public class MainFrameController {
             //释放资源与组件状态调整
             client.close();
             setDisable(false);
-            javaFXUtil.addMessage(textBox, chatArea,javaFXUtil.getText(0,"已断开与服务器的连接",false));
+            javaFXUtil.drawMessage(textBox, chatArea,0,"已断开与服务器的连接","",false);
             userList.getItems().clear();
             receiver.setText("");
         } catch (IOException e) {
@@ -159,9 +158,12 @@ public class MainFrameController {
     @FXML
     void initialize() {
         portCheck();//启用端口号文本框输入检查
+        nameCheck();//启用用户名检查
         //禁用部分组件
         quitBtn.disableProperty().set(true);
         sendMessageBtn.disableProperty().set(true);
+
+
     }
 
 
@@ -175,6 +177,19 @@ public class MainFrameController {
             //如果字符符合正则则返回可以change,否则不改变
             String str = change.getText();
             if (str.matches("[0-9]") || str.equals("")) return change;
+            return null;
+        }));
+    }
+
+    /**
+     * @description: 对用户名输入窗口的输入检查
+     * @param:
+     * @return: void
+     */
+    public void nameCheck() {
+        nameField.setTextFormatter(new TextFormatter<>(change -> {
+            //如果用户名长度<10可以change,否则不改变
+            if (nameField.getText().length()<9 || change.getText().equals("")) return change;
             return null;
         }));
     }

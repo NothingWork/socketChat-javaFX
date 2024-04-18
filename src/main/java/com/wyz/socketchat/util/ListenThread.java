@@ -6,12 +6,16 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Yun
@@ -23,17 +27,19 @@ public class ListenThread extends Thread {
     private final ScrollPane chatArea;
     private final VBox textBox;
     private final ListView<String> listView;
+    private final Text receiver;
     private final String name;//当前线程所属用户名
     JavaFXUtil javaFXUtil = new JavaFXUtil();
     MessageUtil messageUtil = new MessageUtil();
 
     //构造函数
-    public ListenThread(Socket socket, ScrollPane chatArea, VBox textBox,ListView<String> listView,String name) {
+    public ListenThread(Socket socket, ScrollPane chatArea, VBox textBox,ListView<String> listView,Text receiver,String name) {
         this.socket = socket;
         this.chatArea = chatArea;
         this.textBox = textBox;
         this.name = name;
         this.listView = listView;
+        this.receiver = receiver;
     }
 
     //监听消息线程
@@ -62,7 +68,6 @@ public class ListenThread extends Thread {
                             } else {
                                 //是别人发出的消息
                                 type = 1;
-                                message.setData(message.getData() + "说：");
                             }
                             break;
                         case '8':
@@ -71,11 +76,9 @@ public class ListenThread extends Thread {
                             if (message.getFromName().equals(name)) {
                                 //是自己发出的消息
                                 type = 2;
-                                message.setData("你对" + message.getToName() + "说：" + message.getData());
                             } else {
                                 //是别人发出的消息
                                 type = 1;
-                                message.setData(message.getFromName() + "对你说：" + message.getData());
                             }
                             break;
                         case '9':
@@ -88,8 +91,8 @@ public class ListenThread extends Thread {
                         int finalType = type;
                         boolean finalIsSolo = isSolo;
                         Platform.runLater(() ->
-                                javaFXUtil.addMessage(textBox, chatArea,
-                                        javaFXUtil.getText(finalType, message.getData(), finalIsSolo)));
+                                javaFXUtil.drawMessage(textBox, chatArea, finalType, message.getData(),
+                                        message.getFromName(), finalIsSolo));
                     }
                 }
             }
@@ -111,12 +114,17 @@ public class ListenThread extends Thread {
 
         //为了不影响用户原有的操作，对列表进行逐步更新而不是整个list直接替换
         //删除离线的
-        for (String name:listView.getItems()
+        //防止线程冲突，先复制一份
+        List<String> copyList = new ArrayList<>(listView.getItems());
+
+        for (String name:copyList
              ) {
             if(!list.contains(name)){
-                //如果移除的是当前选中的，则改选中为0
+                //如果移除的是当前选中的，则改选中为0,接受者提示文本修改
                 if(name.equals(listView.getSelectionModel().getSelectedItem())){
                     listView.getSelectionModel().select(0);
+                    receiver.setFill(Paint.valueOf("#000000"));
+                    receiver.setText("群发");
                 }
                 listView.getItems().remove(name);
             }
@@ -128,7 +136,6 @@ public class ListenThread extends Thread {
                 listView.getItems().add(name);
             }
         }
-        listView.setItems(list);
     }
 
 }

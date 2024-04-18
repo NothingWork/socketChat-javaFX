@@ -1,9 +1,10 @@
 package com.wyz.socketchat.util;
 
 import com.wyz.socketchat.bean.Message;
-import javafx.collections.ObservableList;
-import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.*;
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 /**
  * @author Yun
@@ -28,31 +28,30 @@ public class JavaFXUtil {
      * @return: boolean
      */
 
-    public boolean login(Socket socket,String name){
+    public boolean login(Socket socket, String name) {
         boolean flag = false;
         //发送登录消息
-        Message message = new Message('0',name.length(),name,0,"","");//客户=>服务
-        messageUtil.sendMessage(socket,message);
+        Message message = new Message('0', name.length(), name, 0, "", "");//客户=>服务
+        messageUtil.sendMessage(socket, message);
         //监听登录反馈
-        while (true){
+        while (true) {
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                 String str = br.readLine();
-                if(str!=null){
+                if (str != null) {
                     Message logMsg = new Message().stringToMessage(str);
-                        if(logMsg.getCode() == '4'){
-                            //成功消息，服务端查验用户名成功，发送成功确认消息
-                            message.setCode('7');
-                            messageUtil.sendMessage(socket, message);
-                            flag = true;
-                            break;
-                        }
-                        else if(logMsg.getCode() == '3'){
-                            //失败消息，服务端查验用户名失败，发送失败确认消息，客户端被迫断连
-                            message.setCode('6');
-                            messageUtil.sendMessage(socket, message);
-                            break;
-                        }
+                    if (logMsg.getCode() == '4') {
+                        //成功消息，服务端查验用户名成功，发送成功确认消息
+                        message.setCode('7');
+                        messageUtil.sendMessage(socket, message);
+                        flag = true;
+                        break;
+                    } else if (logMsg.getCode() == '3') {
+                        //失败消息，服务端查验用户名失败，发送失败确认消息，客户端被迫断连
+                        message.setCode('6');
+                        messageUtil.sendMessage(socket, message);
+                        break;
+                    }
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -63,47 +62,60 @@ public class JavaFXUtil {
     }
 
     /**
-     * @description: 生成用于在聊天区域展示的文本
-     * @param: 消息的类型代码,消息内容,是否为私聊消息
-     * @return: javafx.scene.text.Text
+     * @description: 在消息区域画上一个消息框
+     * @param: vbox容器，消息区域，消息类型，消息内容，消息发送者，是否为私聊消息
+     * @return:
      */
-    public TextFlow getText(int type, String message, boolean isSolo){
-        Text text = new Text(message+"\n");
-        TextFlow textFlow =new TextFlow();
-        switch (type){
+    public void drawMessage(VBox textBox, ScrollPane chatArea, int type, String message,String name, boolean isSolo) {
+        Text messageText = new Text(message);//消息内容
+        double textLen = messageText.getLayoutBounds().getWidth();//消息文本长度
+        TextFlow textFlow = new TextFlow();//装备消息内容的消息盒子
+        HBox messageBox = new HBox();//装备消息盒子的外容器
+
+        Text nameText = new Text(name);//发送者姓名
+        HBox nameBox = new HBox(nameText);//装备发送者姓名的外容器
+
+        switch (type) {
             case 0:
                 //系统消息
-                text.setFill(Paint.valueOf("#4e38e0"));
-                text.setFont(Font.font("System", FontWeight.BOLD,15));
-                textFlow.setTextAlignment(TextAlignment.CENTER);
+                messageText.setFill(Paint.valueOf("#ffffff"));
+                messageText.setFont(Font.font("System", FontWeight.BOLD, 15));
+                textFlow.getStyleClass().add("text-flow1");
+                messageBox.setStyle("-fx-alignment: center");
+                nameBox.setStyle("-fx-alignment: center");
                 break;
             case 1:
                 //他人消息
-                textFlow.setTextAlignment(TextAlignment.LEFT);
-                text.setFont(new Font(20));
+                textFlow.getStyleClass().add("text-flow3");
+                messageText.setFont(new Font(20));
+                messageBox.setStyle("-fx-alignment: top-left");
+                nameBox.setStyle("-fx-alignment: top-left");
                 break;
             case 2:
                 //自己消息
-                textFlow.setTextAlignment(TextAlignment.RIGHT);
-                text.setFont(new Font(20));
+                textFlow.getStyleClass().add("text-flow3");
+                messageText.setFont(new Font(20));
+                messageBox.setStyle("-fx-alignment: top-right");
+                nameBox.setStyle("-fx-alignment: top-right");
                 break;
         }
-        //私聊消息再染绿色
-        if(isSolo) text.setFill(Paint.valueOf("#05ad1f"));
-        textFlow.getChildren().add(text);
-        return textFlow;
-    }
+        //私聊消息再染白色
+        if (isSolo){
+            nameText.setText("(私)"+nameText.getText());
+            nameText.setFill(Paint.valueOf("#ffffff"));
+            messageText.setFill(Paint.valueOf("#ffffff"));
+        }
+        //消息盒子长宽包装
+        textFlow.setMaxWidth(260);
+        textFlow.setMinHeight(((int) textLen/175)*30+35);
+        textBox.setStyle("-fx-padding: 5 15 0 15");
 
-    /**
-     * @description: 在聊天区域渲染新的消息
-     * @param: 消息容器，渲染区域，消息内容
-     * @return: void
-     */
-    public void addMessage(VBox textBox,ScrollPane chatArea,TextFlow tf){
-        textBox.getChildren().add(tf);
+        //容器包装 message->textFlow->messageBox->vbox->scroll-pane
+        //       name->nameBox->Vbox->scroll-pane
+        textFlow.getChildren().add(messageText);
+        messageBox.getChildren().add(textFlow);
+        textBox.getChildren().addAll(nameBox,messageBox);
         chatArea.setContent(textBox);
         chatArea.vvalueProperty().bind(textBox.heightProperty());//自动滚动
     }
-
-
 }

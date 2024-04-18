@@ -34,6 +34,11 @@ public class MessageUtil {
         }
     }
 
+    /**
+     * @description: 获取在线用户列表
+     * @param: 包含用户列表的字符串
+     * @return: javafx.collections.ObservableList<java.lang.String>
+     */
     public ObservableList<String> getListByStr(String str){
         ObservableList<String> list = FXCollections.observableArrayList();
         int begin = 0;//其实分割位置
@@ -47,4 +52,14 @@ public class MessageUtil {
         return list;
     }
 
+
+    public String packString(int length,String str){
+        str = " "+str+" ";
+        StringBuilder sb = new StringBuilder(str);
+        if(length>230){
+
+        }
+
+return null;
+    }
 }

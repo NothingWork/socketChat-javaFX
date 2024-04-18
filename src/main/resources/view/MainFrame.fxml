@@ -1,55 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.*?>
 <?import java.lang.*?>
-<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="username" prefHeight="898.0" prefWidth="1259.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wyz.socketchat.controller.MainFrameController">
-   <children>
-      <Button fx:id="connectBtn" layoutX="776.0" layoutY="26.0" mnemonicParsing="false" onAction="#connect" prefHeight="53.0" prefWidth="104.0" text="连接">
-         <font>
-            <Font size="18.0" />
-         </font></Button>
-      <TextField fx:id="ipField" layoutX="148.0" layoutY="33.0" prefHeight="39.0" prefWidth="286.0" promptText="输入服务器连接地址" />
-      <TextArea fx:id="typeArea" layoutX="148.0" layoutY="597.0" onKeyPressed="#sendByKeyboard" prefHeight="169.0" prefWidth="861.0" />
-      <Button fx:id="sendMessageBtn" layoutX="881.0" layoutY="693.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="53.0" prefWidth="112.0" text="发送">
-         <font>
-            <Font size="18.0" />
-         </font></Button>
-      <TextField fx:id="portField" layoutX="443.0" layoutY="33.0" prefHeight="39.0" prefWidth="139.0" promptText="输入端口号" />
-      <Button fx:id="quitBtn" layoutX="905.0" layoutY="26.0" mnemonicParsing="false" onAction="#quitConnect" prefHeight="53.0" prefWidth="104.0" text="断开连接" textFill="#e13636">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Button>
-      <TextField fx:id="nameField" layoutX="590.0" layoutY="33.0" prefHeight="39.0" prefWidth="161.0" promptText="输入用户名" />
-      <ScrollPane fx:id="chatArea" layoutX="148.0" layoutY="93.0" prefHeight="497.0" prefWidth="861.0">
-         <content>
-            <VBox fx:id="textBox" alignment="CENTER" prefHeight="37.0" prefWidth="831.0" />
-         </content>
-      </ScrollPane>
-      <ListView fx:id="userList" layoutX="1009.0" layoutY="94.0" onMouseClicked="#listClick" prefHeight="672.0" prefWidth="161.0" />
-      <Text layoutX="1023.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="当前在线：" wrappingWidth="152.30029296875">
-         <font>
-            <Font size="21.0" />
-         </font>
-      </Text>
-      <Text layoutX="1023.0" layoutY="85.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(选中以私聊)">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Text>
-      <Text layoutX="490.0" layoutY="784.0" strokeType="OUTSIDE" strokeWidth="0.0" text="发送至：">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Text>
-      <Text fx:id="receiver" fill="#000000de" layoutX="559.0" layoutY="783.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="38.30029296875">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Text>
-   </children>
+<AnchorPane fx:id="username" prefHeight="830.0" prefWidth="1227.0" stylesheets="@../css/MainFrame.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wyz.socketchat.controller.MainFrameController">
+    <children>
+        <Button fx:id="connectBtn" focusTraversable="false" layoutX="776.0" layoutY="26.0" mnemonicParsing="false" onAction="#connect" prefHeight="51.0" prefWidth="104.0" text="连接">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Button>
+        <TextField fx:id="ipField" layoutX="148.0" layoutY="33.0" prefHeight="39.0" prefWidth="286.0" promptText="输入服务器连接地址" />
+        <TextArea fx:id="typeArea" focusTraversable="false" layoutX="148.0" layoutY="614.0" onKeyPressed="#sendByKeyboard" prefHeight="152.0" prefWidth="698.0" />
+        <Button id="sendMessageBtn" fx:id="sendMessageBtn" focusTraversable="false" layoutX="847.0" layoutY="586.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="178.0" prefWidth="170.0">
+            <font>
+                <Font size="18.0" />
+            </font>
+         <cursor>
+            <Cursor fx:constant="DEFAULT" />
+         </cursor>
+        </Button>
+        <TextField fx:id="portField" layoutX="443.0" layoutY="33.0" prefHeight="39.0" prefWidth="139.0" promptText="输入端口号" />
+        <Button fx:id="quitBtn" focusTraversable="false" layoutX="905.0" layoutY="26.0" mnemonicParsing="false" onAction="#quitConnect" prefHeight="51.0" prefWidth="104.0" text="断开连接" textFill="#e13636">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Button>
+        <TextField fx:id="nameField" layoutX="590.0" layoutY="33.0" prefHeight="39.0" prefWidth="170.0" promptText="输入用户名" />
+        <ScrollPane fx:id="chatArea" focusTraversable="false" layoutX="148.0" layoutY="93.0" prefHeight="497.0" prefWidth="861.0">
+            <content>
+                <VBox fx:id="textBox" alignment="CENTER" prefHeight="19.0" prefWidth="862.0">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </VBox>
+            </content>
+        </ScrollPane>
+        <ListView fx:id="userList" focusTraversable="false" layoutX="1009.0" layoutY="93.0" onMouseClicked="#listClick" prefHeight="673.0" prefWidth="161.0" />
+        <Text layoutX="1023.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="当前在线：" wrappingWidth="152.30029296875">
+            <font>
+                <Font size="21.0" />
+            </font>
+        </Text>
+        <Text layoutX="1022.0" layoutY="86.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(选中以私聊)">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Text>
+        <Text layoutX="148.0" layoutY="608.0" strokeType="OUTSIDE" strokeWidth="0.0" text="发送至：">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Text>
+        <Text fx:id="receiver" fill="#000000de" layoutX="217.0" layoutY="607.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="452.30029296875">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Text>
+    </children>
 </AnchorPane>
