@@ -55,44 +55,22 @@ public class ListenThread extends Thread {
 
                     Message message = new Message().stringToMessage(str);
                     int type = 0;//消息类型，默认为系统广播消息
-                    boolean isSolo = false;//是否为私聊消息，默认为非私聊
-                    switch (message.getCode()) {
-                        case '5':
-                            //广播消息
-                            break;
-                        case '1':
-                            //群发消息，
-                            if (message.getFromName().equals(name)) {
-                                //是自己发出的消息
-                                type = 2;
-                            } else {
-                                //是别人发出的消息
-                                type = 1;
-                            }
-                            break;
-                        case '8':
-                            //私聊消息，
-                            isSolo = true;
-                            if (message.getFromName().equals(name)) {
-                                //是自己发出的消息
-                                type = 2;
-                            } else {
-                                //是别人发出的消息
-                                type = 1;
-                            }
-                            break;
-                        case '9':
-                            //更新消息，更新用户列表
-                            Platform.runLater(() -> updateList(listView,message.getData()));
-                            break;
+                    if (message.getFromName().equals(name)) {
+                        //是自己发出的消息
+                        type = 2;
+                    } else if(!message.getFromName().equals("")) {
+                        //是别人发出的消息
+                        type = 1;
                     }
-                    //消息代码为 '9' 不用在聊天区域渲染消息
-                    if(message.getCode()!='9'){
+                    if(message.getCode()=='9'){
+                        //更新消息，更新用户列表
+                        Platform.runLater(() -> updateList(listView,message.getData()));
+                    }
+                    else{
+                        //消息代码为 '9' 不用在聊天区域渲染消息,其余消息进行渲染
                         int finalType = type;
-                        boolean finalIsSolo = isSolo;
                         Platform.runLater(() ->
-                                javaFXUtil.drawMessage(textBox, chatArea, finalType, message.getData(),
-                                        message.getFromName(), finalIsSolo));
+                                javaFXUtil.drawMessage(textBox, chatArea, finalType,message));
                     }
                 }
             }

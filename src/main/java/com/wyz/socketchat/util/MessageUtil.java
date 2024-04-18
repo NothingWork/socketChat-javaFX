@@ -26,6 +26,8 @@ public class MessageUtil {
         //向服务器发送消息
         PrintWriter out;
         try {
+            //字符串中的换行符替换为空格
+            message.setData(message.getData().replaceAll("\n"," "));
             out = new PrintWriter(new OutputStreamWriter(client.getOutputStream(), StandardCharsets.UTF_8));
             out.println(message.messageToString());
             out.flush();

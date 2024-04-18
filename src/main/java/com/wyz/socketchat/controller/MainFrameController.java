@@ -61,13 +61,15 @@ public class MainFrameController {
 
         if (ipField.getText().trim().equals("") || portField.getText().trim().equals("")
                 || nameField.getText().trim().equals("")) {
-            javaFXUtil.drawMessage(textBox, chatArea,0,"请填写必要内容","",false);
+            message.setData("请完善必要信息");
+            javaFXUtil.drawMessage(textBox, chatArea,0,message);
         } else {
             try {
                 //检查端口合法性
                 int port = Integer.parseInt(portField.getText());
                 if (port < 1 || port > 65535) {
-                    javaFXUtil.drawMessage(textBox, chatArea,0,"端口非法","",false);
+                    message.setData("端口非法");
+                    javaFXUtil.drawMessage(textBox, chatArea,0,message);
                     portField.clear();
                 }
                 //进行登录，判断结果
@@ -87,13 +89,16 @@ public class MainFrameController {
                     userList.getItems().add("（选中以群发）");
                     userList.getSelectionModel().select(0);
                     receiver.setText("群发");
+                    receiver.setFill(Paint.valueOf("#000000"));
                 }
                 //登录失败
                 else {
-                    javaFXUtil.drawMessage(textBox, chatArea,0,"该用户名已被占用","",false);
+                    message.setData("该用户名已被占用");
+                    javaFXUtil.drawMessage(textBox, chatArea,0,message);
                 }
             } catch (IOException e) {
-                javaFXUtil.drawMessage(textBox, chatArea,0,"服务器连接失败","",false);
+                message.setData("服务器连接失败");
+                javaFXUtil.drawMessage(textBox, chatArea,0,message);
             }
         }
     }
@@ -142,7 +147,8 @@ public class MainFrameController {
             //释放资源与组件状态调整
             client.close();
             setDisable(false);
-            javaFXUtil.drawMessage(textBox, chatArea,0,"已断开与服务器的连接","",false);
+            message.setData("已断开与服务器的连接");
+            javaFXUtil.drawMessage(textBox, chatArea,0,message);
             userList.getItems().clear();
             receiver.setText("");
         } catch (IOException e) {
@@ -162,8 +168,21 @@ public class MainFrameController {
         //禁用部分组件
         quitBtn.disableProperty().set(true);
         sendMessageBtn.disableProperty().set(true);
+        //消息基本信息编写
+        message.setCode('5');
+        message.setFromName("");
 
-
+        //按下ctrl+enter换行
+        typeArea.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isControlDown() && event.getCode() == KeyCode.ENTER) {
+                int caretPosition = typeArea.getCaretPosition();
+                String text = typeArea.getText();
+                String newText = text.substring(0, caretPosition) + "\n" + text.substring(caretPosition);
+                typeArea.setText(newText);
+                typeArea.positionCaret(typeArea.getLength()); // 将光标放在最后
+                event.consume();
+            }
+        });
     }
 
 

@@ -66,13 +66,13 @@ public class JavaFXUtil {
      * @param: vbox容器，消息区域，消息类型，消息内容，消息发送者，是否为私聊消息
      * @return:
      */
-    public void drawMessage(VBox textBox, ScrollPane chatArea, int type, String message,String name, boolean isSolo) {
-        Text messageText = new Text(message);//消息内容
+    public void drawMessage(VBox textBox, ScrollPane chatArea, int type,Message message) {
+        Text messageText = new Text(message.getData());//消息内容
         double textLen = messageText.getLayoutBounds().getWidth();//消息文本长度
         TextFlow textFlow = new TextFlow();//装备消息内容的消息盒子
         HBox messageBox = new HBox();//装备消息盒子的外容器
 
-        Text nameText = new Text(name);//发送者姓名
+        Text nameText = new Text(message.getFromName());//发送者姓名
         HBox nameBox = new HBox(nameText);//装备发送者姓名的外容器
 
         switch (type) {
@@ -100,14 +100,16 @@ public class JavaFXUtil {
                 break;
         }
         //私聊消息再染白色
-        if (isSolo){
-            nameText.setText("(私)"+nameText.getText());
+        if (message.getCode()== '8'){
+            if(type==2){
+                nameText.setText("(私)"+nameText.getText()+"->"+message.getToName());
+            }
             nameText.setFill(Paint.valueOf("#ffffff"));
             messageText.setFill(Paint.valueOf("#ffffff"));
         }
         //消息盒子长宽包装
         textFlow.setMaxWidth(260);
-        textFlow.setMinHeight(((int) textLen/175)*30+35);
+        //textFlow.setMinHeight(((int) textLen/175)*30+35);
         textBox.setStyle("-fx-padding: 5 15 0 15");
 
         //容器包装 message->textFlow->messageBox->vbox->scroll-pane

@@ -58,10 +58,11 @@
                 <Font size="18.0" />
             </font>
         </Text>
-        <Text fx:id="receiver" fill="#000000de" layoutX="217.0" layoutY="607.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="452.30029296875">
+        <Text fx:id="receiver" fill="#000000de" layoutX="214.0" layoutY="607.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="375.30029296875">
             <font>
                 <Font size="18.0" />
             </font>
         </Text>
+      <Text layoutX="614.0" layoutY="607.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter发送，ctrl+Enter换行" />
     </children>
 </AnchorPane>
