@@ -106,7 +106,7 @@ public class serverThread extends Thread {
     }
 
     /**
-     * @description: 向所有客户端广播消息
+     * @description: 发送一条消息
      * @param: 要发送的消息，要发送至的socket
      * @return: void
      */
@@ -128,7 +128,7 @@ public class serverThread extends Thread {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("消息发送失败！");
         }
     }
 

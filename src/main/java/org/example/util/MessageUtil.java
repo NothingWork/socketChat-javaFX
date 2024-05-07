@@ -30,14 +30,4 @@ public class MessageUtil {
         }
     }
 
-
-    public String packString(int length,String str){
-        str = " "+str+" ";
-        StringBuilder sb = new StringBuilder(str);
-        if(length>230){
-
-        }
-
-return null;
-    }
 }

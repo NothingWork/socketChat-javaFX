@@ -33,8 +33,9 @@ public class Spark extends WebSocketListener {
     public  StringBuilder totalAnswer = new StringBuilder();//gpt答案汇总
     private WebSocket webSocket;
     private Socket scoket;//连接聊天服务器
-    private String toName = "";//提问者的姓名
+    private static String toName = "";//提问者的姓名
     private static final Gson gson = new Gson();
+    private MessageUtil messageUtil = new MessageUtil();
 
     public Spark(Socket scoket) {
         this.scoket = scoket;
@@ -173,6 +174,7 @@ public class Spark extends WebSocketListener {
     public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
         super.onMessage(webSocket, text);
         Answer answer = gson.fromJson(text,Answer.class);
+        //System.out.println(text);
         if(answer.header.code != 0){
             System.out.println("回答出错");
             webSocket.close(1000,"");
@@ -192,7 +194,7 @@ public class Spark extends WebSocketListener {
             //发送答案至聊天服务器
             Message message = new Message('8',4,"讯飞星火",toName.length(),
                     toName,totalAnswer.toString());
-            new MessageUtil().sendMessage(scoket,message);
+            messageUtil.sendMessage(scoket,message);
         }
 
     }
@@ -201,6 +203,11 @@ public class Spark extends WebSocketListener {
     @Override
     public void onFailure(@NotNull WebSocket webSocket, @NotNull Throwable t, @Nullable Response response) {
         super.onFailure(webSocket, t, response);
+        //提问包含非法信息
+        //发送答案至聊天服务器
+        Message message = new Message('8',4,"讯飞星火",toName.length(),toName,"听不懂捏~");
+        messageUtil.sendMessage(scoket,message);
+
         System.out.println("对话失败");
         if (response != null) {
             System.out.println("错误码："+ response.code());
