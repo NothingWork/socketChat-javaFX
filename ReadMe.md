@@ -7,3 +7,8 @@
 
 消息盒子包装的示意图  
 ![messageBox.jpg](src%2Fmain%2Fresources%2Fimages%2FmessageBox.jpg)
+
+
+**文件传输系统设计思路**  
+1.文件系统与原有的聊天系统是分离的两个系统，另开启8081端口数设计一套与聊天系统相似的系统
+

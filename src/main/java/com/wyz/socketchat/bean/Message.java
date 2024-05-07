@@ -91,7 +91,7 @@ public class Message {
      * @param: 要调换的message
      * @return: bean.Message
      */
-    public Message reverse(Message message){
+    public Message reverse(){
         int fromLen = this.fromLen;
         String fromName = this.fromName;
 

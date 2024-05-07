@@ -2,12 +2,13 @@ package com.wyz.socketchat.util;
 
 import com.wyz.socketchat.bean.Message;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
-import javafx.scene.text.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,7 +28,6 @@ public class JavaFXUtil {
      * @param: 要登录的socket和用户名
      * @return: boolean
      */
-
     public boolean login(Socket socket, String name) {
         boolean flag = false;
         //发送登录消息
@@ -53,10 +53,9 @@ public class JavaFXUtil {
                         break;
                     }
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (IOException ignored) {
+                //登录失败，服务器未开启
             }
-
         }
         return flag;
     }
@@ -66,7 +65,7 @@ public class JavaFXUtil {
      * @param: vbox容器，消息区域，消息类型，消息内容，消息发送者，是否为私聊消息
      * @return:
      */
-    public void drawMessage(VBox textBox, ScrollPane chatArea, int type,Message message) {
+    public void drawMessage(VBox textBox, ScrollPane chatArea, int type, Message message) {
         Text messageText = new Text(message.getData());//消息内容
         double textLen = messageText.getLayoutBounds().getWidth();//消息文本长度
         TextFlow textFlow = new TextFlow();//装备消息内容的消息盒子
@@ -100,23 +99,22 @@ public class JavaFXUtil {
                 break;
         }
         //私聊消息再染白色
-        if (message.getCode()== '8'){
-            if(type==2){
-                nameText.setText("(私)"+nameText.getText()+"->"+message.getToName());
+        if (message.getCode() == '8') {
+            if (type == 2) {
+                nameText.setText("(私)" + nameText.getText() + "->" + message.getToName());
             }
             nameText.setFill(Paint.valueOf("#ffffff"));
             messageText.setFill(Paint.valueOf("#ffffff"));
         }
         //消息盒子长宽包装
-        textFlow.setMaxWidth(260);
-        //textFlow.setMinHeight(((int) textLen/175)*30+35);
+        textFlow.setMaxWidth(500);
         textBox.setStyle("-fx-padding: 5 15 0 15");
 
         //容器包装 message->textFlow->messageBox->vbox->scroll-pane
         //       name->nameBox->Vbox->scroll-pane
         textFlow.getChildren().add(messageText);
         messageBox.getChildren().add(textFlow);
-        textBox.getChildren().addAll(nameBox,messageBox);
+        textBox.getChildren().addAll(nameBox, messageBox);
         chatArea.setContent(textBox);
         chatArea.vvalueProperty().bind(textBox.heightProperty());//自动滚动
     }

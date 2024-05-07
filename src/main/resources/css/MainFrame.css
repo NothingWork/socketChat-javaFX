@@ -51,9 +51,11 @@
     -fx-border-radius: 5px;
     -fx-border-color: black;
     -fx-border-width: 1px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size:915 566;
 }
 /*发送按钮*/
-#sendMessageBtn{
+#sendFileBtn{
     -fx-background-color: transparent;
     -fx-background-image: url('/images/bg.jpg');
     -fx-background-repeat: no-repeat;
@@ -61,7 +63,7 @@
     -fx-border-width: 1px;
     -fx-border-color: black;
 }
-#sendMessageBtn:hover{
+#sendFileBtn:hover{
     -fx-cursor: hand;
 }
 
@@ -71,16 +73,16 @@
 /*padding 上右下左*/
 .text-flow1{
     -fx-min-height: 30;
-    -fx-background-color: rgba(224, 149, 209, 0.5);
+    -fx-background-color: rgb(0, 0, 0);
     -fx-background-radius: 10;
-    -fx-padding: 5 0 0 0;
+    -fx-padding: 5 5 5 5;
     -fx-text-alignment: center;
 }
 
 /*聊天消息*/
 .text-flow3{
     -fx-padding: 5 10 5 10;
-    -fx-background-color: rgba(121,112,112,0.3);
+    -fx-background-color: rgba(121,112,112);
     -fx-background-radius: 10;
     -fx-text-alignment: left;
 }

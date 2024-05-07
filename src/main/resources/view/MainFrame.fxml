@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="username" prefHeight="830.0" prefWidth="1227.0" stylesheets="@../css/MainFrame.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wyz.socketchat.controller.MainFrameController">
+<AnchorPane fx:id="root" prefHeight="862.0" prefWidth="1263.0" stylesheets="@../css/MainFrame.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wyz.socketchat.controller.MainFrameController">
     <children>
         <Button fx:id="connectBtn" focusTraversable="false" layoutX="776.0" layoutY="26.0" mnemonicParsing="false" onAction="#connect" prefHeight="51.0" prefWidth="104.0" text="连接">
             <font>
@@ -17,8 +17,8 @@
             </font>
         </Button>
         <TextField fx:id="ipField" layoutX="148.0" layoutY="33.0" prefHeight="39.0" prefWidth="286.0" promptText="输入服务器连接地址" />
-        <TextArea fx:id="typeArea" focusTraversable="false" layoutX="148.0" layoutY="614.0" onKeyPressed="#sendByKeyboard" prefHeight="152.0" prefWidth="698.0" />
-        <Button id="sendMessageBtn" fx:id="sendMessageBtn" focusTraversable="false" layoutX="847.0" layoutY="586.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="178.0" prefWidth="170.0">
+        <TextArea fx:id="typeArea" focusTraversable="false" layoutX="148.0" layoutY="679.0" onKeyPressed="#sendByKeyboard" prefHeight="132.0" prefWidth="746.0" />
+        <Button id="sendFileBtn" fx:id="sendFileBtn" focusTraversable="false" layoutX="893.0" layoutY="655.0" mnemonicParsing="false" onAction="#sendFile" prefHeight="156.0" prefWidth="170.0">
             <font>
                 <Font size="18.0" />
             </font>
@@ -33,36 +33,36 @@
             </font>
         </Button>
         <TextField fx:id="nameField" layoutX="590.0" layoutY="33.0" prefHeight="39.0" prefWidth="170.0" promptText="输入用户名" />
-        <ScrollPane fx:id="chatArea" focusTraversable="false" layoutX="148.0" layoutY="93.0" prefHeight="497.0" prefWidth="861.0">
+        <ScrollPane fx:id="chatArea" focusTraversable="false" layoutX="148.0" layoutY="93.0" prefHeight="566.0" prefWidth="915.0">
             <content>
-                <VBox fx:id="textBox" alignment="CENTER" prefHeight="19.0" prefWidth="862.0">
+                <VBox fx:id="textBox" alignment="CENTER" prefHeight="19.0" prefWidth="909.0">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
             </VBox>
             </content>
         </ScrollPane>
-        <ListView fx:id="userList" focusTraversable="false" layoutX="1009.0" layoutY="93.0" onMouseClicked="#listClick" prefHeight="673.0" prefWidth="161.0" />
-        <Text layoutX="1023.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="当前在线：" wrappingWidth="152.30029296875">
+        <ListView fx:id="userList" focusTraversable="false" layoutX="1064.0" layoutY="95.0" onMouseClicked="#listClick" prefHeight="717.0" prefWidth="159.0" />
+        <Text layoutX="1062.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="当前在线：" wrappingWidth="152.30029296875">
             <font>
                 <Font size="21.0" />
             </font>
         </Text>
-        <Text layoutX="1022.0" layoutY="86.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(选中以私聊)">
+        <Text layoutX="1062.0" layoutY="90.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(选中以私聊)">
             <font>
                 <Font size="18.0" />
             </font>
         </Text>
-        <Text layoutX="148.0" layoutY="608.0" strokeType="OUTSIDE" strokeWidth="0.0" text="发送至：">
+        <Text layoutX="148.0" layoutY="676.0" strokeType="OUTSIDE" strokeWidth="0.0" text="发送至：">
             <font>
                 <Font size="18.0" />
             </font>
         </Text>
-        <Text fx:id="receiver" fill="#000000de" layoutX="214.0" layoutY="607.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="375.30029296875">
+        <Text fx:id="receiver" fill="#000000de" layoutX="214.0" layoutY="676.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="375.30029296875">
             <font>
                 <Font size="18.0" />
             </font>
         </Text>
-      <Text layoutX="614.0" layoutY="607.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter发送，ctrl+Enter换行" />
+      <Text layoutX="655.0" layoutY="676.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter发送，ctrl+Enter换行" />
     </children>
 </AnchorPane>

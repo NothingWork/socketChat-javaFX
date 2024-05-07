@@ -9,8 +9,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Yun
@@ -27,12 +25,12 @@ public class MessageUtil {
         PrintWriter out;
         try {
             //字符串中的换行符替换为空格
-            message.setData(message.getData().replaceAll("\n"," "));
+            message.setData(message.getData().replaceAll("\n", " "));
             out = new PrintWriter(new OutputStreamWriter(client.getOutputStream(), StandardCharsets.UTF_8));
             out.println(message.messageToString());
             out.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ignored) {
+           //消息未发送出去，可能的原因：服务器中途关闭
         }
     }
 
@@ -41,27 +39,17 @@ public class MessageUtil {
      * @param: 包含用户列表的字符串
      * @return: javafx.collections.ObservableList<java.lang.String>
      */
-    public ObservableList<String> getListByStr(String str){
+    public ObservableList<String> getListByStr(String str) {
         ObservableList<String> list = FXCollections.observableArrayList();
         int begin = 0;//其实分割位置
-        while(true){
-            int nameLen = Integer.parseInt(str.substring(begin,begin+1));
-            if(nameLen == 0) break;//用户名长为0，说明到结束标志了
-            String name = str.substring(begin+1,begin+1+nameLen);
+        while (true) {
+            int nameLen = Integer.parseInt(str.substring(begin, begin + 1));
+            if (nameLen == 0) break;//用户名长为0，说明到结束标志了
+            String name = str.substring(begin + 1, begin + 1 + nameLen);
             list.add(name);
-            begin = begin+1+nameLen;
+            begin = begin + 1 + nameLen;
         }
         return list;
     }
 
-
-    public String packString(int length,String str){
-        str = " "+str+" ";
-        StringBuilder sb = new StringBuilder(str);
-        if(length>230){
-
-        }
-
-return null;
-    }
 }

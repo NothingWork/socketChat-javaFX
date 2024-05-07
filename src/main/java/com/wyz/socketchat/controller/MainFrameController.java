@@ -5,15 +5,22 @@ import com.wyz.socketchat.bean.Message;
 import com.wyz.socketchat.util.JavaFXUtil;
 import com.wyz.socketchat.util.ListenThread;
 import com.wyz.socketchat.util.MessageUtil;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -27,6 +34,8 @@ public class MainFrameController {
     MessageUtil messageUtil = new MessageUtil();//发送消息工具类
     Message message = new Message();//消息类包装
     JavaFXUtil javaFXUtil = new JavaFXUtil();
+    @FXML
+    private AnchorPane root;//根节点场景
     @FXML
     private TextField ipField;//填写聊天服务器的ip
     @FXML
@@ -42,7 +51,7 @@ public class MainFrameController {
     @FXML
     public ScrollPane chatArea;//聊天信息区域
     @FXML
-    private Button sendMessageBtn;//发送消息按钮
+    private Button sendFileBtn;//发送文件按钮
     @FXML
     public VBox textBox;//包裹消息的内容器
     @FXML
@@ -104,27 +113,22 @@ public class MainFrameController {
     }
 
     /**
-     * @description: 发送消息事件，点击发送按调用
+     * @description: 发送消息按钮，点击发送按调用
      * @param:
      * @return: void
      */
-    @FXML
-    void sendMessage() {
-        if (!typeArea.getText().equals("")) {
-            //文本框消息
-            String str = typeArea.getText();
+    void sendMessage(char code,String data) {
+        if (!data.equals("")) {
             //消息类封装
             String toName = userList.getSelectionModel().getSelectedItem();//选中的发送人
             message.setToLen(toName.length());
             message.setToName(toName);
-            message.setData(str);
-            //判断是否为私发
-            if (userList.getSelectionModel().getSelectedIndex() == 0) message.setCode('1');
-            else message.setCode('8');
+            message.setData(data);
+            //判断是否为私发或者为文件消息
+            if (userList.getSelectionModel().getSelectedIndex() == 0 && code!='I') message.setCode('1');
+            else message.setCode(code);
             //发送出去消息
             messageUtil.sendMessage(client, message);
-            //清空发送区域
-            typeArea.setText("");
         }
     }
 
@@ -167,7 +171,7 @@ public class MainFrameController {
         nameCheck();//启用用户名检查
         //禁用部分组件
         quitBtn.disableProperty().set(true);
-        sendMessageBtn.disableProperty().set(true);
+        sendFileBtn.disableProperty().set(true);
         //消息基本信息编写
         message.setCode('5');
         message.setFromName("");
@@ -226,20 +230,23 @@ public class MainFrameController {
         nameField.setDisable(bool);
 
         quitBtn.setDisable(!bool);
-        sendMessageBtn.setDisable(!bool);
+        sendFileBtn.setDisable(!bool);
         connectBtn.setDisable(bool);
 
     }
 
     /**
-     * @description: 在文本输入区域禁用回车键
+     * @description: 在文本输入区域按下回车键发送消息
      * @param: event
      * @return: void
      */
     public void sendByKeyboard(KeyEvent event) {
         if (event.getCode() == KeyCode.getKeyCode("Enter")) {
             event.consume();
-            sendMessageBtn.fire();
+            //发送消息
+            sendMessage('8',typeArea.getText());
+            //清空发送区域
+            typeArea.setText("");
         }
     }
 
@@ -258,6 +265,53 @@ public class MainFrameController {
         else{
             receiver.setFill(Paint.valueOf("#05ad1f"));
             receiver.setText(userList.getSelectionModel().getSelectedItem());
+        }
+    }
+
+    /**
+     * @description: 发送文件
+     * @param:
+     * @return: void
+     */
+    @FXML
+     void sendFile(ActionEvent actionEvent) {
+        //发送消息
+        sendMessage('8',typeArea.getText());
+        //清空发送区域
+        typeArea.setText("");
+
+        //传输文件系统，待完善
+    }
+
+    public void writeFile(){
+        try {
+            //1.选择文件
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("选择文件");
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            Stage stage = (Stage) root.getScene().getWindow();
+            File selectedFile = fileChooser.showOpenDialog(stage);
+            if (selectedFile != null) {
+                //2.写文件
+                FileInputStream fis = new FileInputStream(selectedFile);
+                DataOutputStream dos = new DataOutputStream(client.getOutputStream());
+                dos.writeUTF(selectedFile.getName());//文件名
+                dos.writeLong(selectedFile.length());//文件长度
+                dos.flush();
+                System.out.println("开始传输文件");
+                byte[] bytes = new byte[1024];
+                int length;
+                while ((length = fis.read(bytes,0,bytes.length)) != -1){
+                    dos.write(length);
+                    dos.flush();
+                }
+                System.out.println("传输完成");
+                fis.close();
+                dos.close();
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -3,6 +3,8 @@ package com.wyz.socketchat.util;
 import com.wyz.socketchat.bean.Message;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
@@ -52,7 +54,6 @@ public class ListenThread extends Thread {
                 //解析数据
                 String str = br.readLine();
                 if (str != null) {
-
                     Message message = new Message().stringToMessage(str);
                     int type = 0;//消息类型，默认为系统广播消息
                     if (message.getFromName().equals(name)) {
@@ -61,13 +62,16 @@ public class ListenThread extends Thread {
                     } else if(!message.getFromName().equals("")) {
                         //是别人发出的消息
                         type = 1;
+                        if(message.getCode() == 'I'){
+
+                        }
                     }
                     if(message.getCode()=='9'){
                         //更新消息，更新用户列表
                         Platform.runLater(() -> updateList(listView,message.getData()));
                     }
                     else{
-                        //消息代码为 '9' 不用在聊天区域渲染消息,其余消息进行渲染
+                        //在聊天区域渲染消息
                         int finalType = type;
                         Platform.runLater(() ->
                                 javaFXUtil.drawMessage(textBox, chatArea, finalType,message));
@@ -75,7 +79,7 @@ public class ListenThread extends Thread {
                 }
             }
         } catch (IOException ignored) {
-            //忽视这个异常
+            //监听消息失败，可能的原因：未知
         }
     }
 
@@ -114,6 +118,22 @@ public class ListenThread extends Thread {
                 listView.getItems().add(name);
             }
         }
+    }
+
+    public void showAlert(Message message,Socket socket){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("确认");
+        alert.setHeaderText(message.getFromName()+"想要向你发送文件，是否接收？");
+        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        // 添加事件处理器
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                //确认接收,发送消息
+                message.setCode('A');
+                message.setData("accept");
+                messageUtil.sendMessage(socket,message.reverse());
+            }
+        });
     }
 
 }
